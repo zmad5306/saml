@@ -24,6 +24,7 @@ import org.opensaml.xml.parse.ParserPool;
 import org.opensaml.xml.parse.StaticBasicParserPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -95,6 +96,21 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
  
 	private Timer backgroundTaskTimer;
 	private MultiThreadedHttpConnectionManager multiThreadedHttpConnectionManager;
+	
+	@Value("${sso.saml.keystore}")
+	private String keystore;
+	
+	@Value("${sso.saml.keystore.password}")
+	private String keystorePassword;
+	
+	@Value("${sso.saml.keystore.idpkey}")
+	private String idpKey;
+	
+	@Value("${sso.saml.keystore.metadata}")
+	private String metadata;
+	
+	@Value("${sso.saml.entityid}")
+	private String entityId;
 	
 	@PostConstruct
 	public void init() {
@@ -203,12 +219,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public KeyManager keyManager() {
         DefaultResourceLoader loader = new DefaultResourceLoader();
         Resource storeFile = loader
-                .getResource("classpath:/saml/samlKeystore.jks");
-        String storePass = "changeit";
+                .getResource(keystore);
         Map<String, String> passwords = new HashMap<String, String>();
-        passwords.put("sp", "changeit");
-        String defaultKey = "sp";
-        return new JKSKeyManager(storeFile, storePass, passwords, defaultKey);
+        passwords.put(idpKey, keystorePassword);
+        return new JKSKeyManager(storeFile, keystorePassword, passwords, idpKey);
     }
  
     // Setup TLS Socket Factory
@@ -273,7 +287,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Bean
     public ResourceBackedMetadataProvider metadataProvider() throws MetadataProviderException, ResourceException {
-        ResourceBackedMetadataProvider provider = new ResourceBackedMetadataProvider(new Timer(), new ClasspathResource("/saml/metadata.xml"));
+        ResourceBackedMetadataProvider provider = new ResourceBackedMetadataProvider(backgroundTaskTimer, new ClasspathResource(metadata));
         provider.setParserPool(ParserPoolHolder.getPool());
         return provider;
     }
@@ -293,7 +307,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public MetadataGenerator metadataGenerator() {
         MetadataGenerator metadataGenerator = new MetadataGenerator();
-        metadataGenerator.setEntityId("urn:example:idp");
+        metadataGenerator.setEntityId(entityId);
         metadataGenerator.setExtendedMetadata(extendedMetadata());
         metadataGenerator.setIncludeDiscoveryExtension(false);
         metadataGenerator.setKeyManager(keyManager()); 

@@ -3,7 +3,8 @@ const {runServer} = require('saml-idp');
 runServer({
   acsUrl: `https://localhost:7000/auth/saml20/assertion-consumer`,
   audience: `urn:example:idp`,
-  config: {
+  sloUrl: `https://localhost:7000/auth/saml20/logout`,
+  // config: {
     // metadata: [{
     //   id: "role",
     //   optional: false,
@@ -11,5 +12,5 @@ runServer({
     //   description: 'The user\'s role',
     //   options: ['ADMIN', 'USER', 'READER']
     // }]
-  }
+  // }
 });
