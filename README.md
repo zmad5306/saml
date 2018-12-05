@@ -19,3 +19,9 @@ Spring integration with Service Provider
 `keytool -genkey -alias sp -keyalg RSA -keystore samlKeystore.jks`
 
 `keytool -import -alias idp -file "C:\Users\Zach\Desktop\Repos\saml\idp\idp-private-key.pem" -keystore samlKeystore.jks`
+
+## Notes
+
+- https://github.com/vdenotaris/spring-boot-security-saml-sample/blob/master/src/main/java/com/vdenotaris/spring/boot/security/saml/web/config/WebSecurityConfig.java
+- https://www.npmjs.com/package/saml-idp
+- https://projects.spring.io/spring-security-saml/
