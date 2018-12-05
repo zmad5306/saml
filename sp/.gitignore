@@ -30,3 +30,4 @@ nbdist/
 .classpath
 .project
 /bin
+.vscode
